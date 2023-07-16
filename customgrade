@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+from gradelib import *
+
+r = Runner(save('jos.out'),
+           stop_breakpoint('readline'))
+
+@test(0, 'running OpenLSD')
+def test_jos():
+    r.run_qemu()
+
+for i in range(3):
+    @test(10)
+    def test_basicfork():
+            r.user_test('basicfork')
+            r.match('.PID     1. New task with PID 2',
+                    '.PID     2. I am the child!',
+                    '.PID     1. I am the parent!',
+                    '.PID     1. Exiting gracefully',
+                    '.PID     .. Freed task with PID 2',
+                    '.PID     1. Freed task with PID 1',
+                    'Destroyed the only task - nothing more to do!')
+
+run_tests()
+
